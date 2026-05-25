@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Mi Perfil - La Pomme Snacks</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --logo-green: #28a745;
+            --gold: #d4af37;
+            --muted: #666;
+            --dark-bg: #2c2b1f;
+            --error: #dc3545;
+            --success: #28a745;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: #fef7e8;
+            background-image: repeating-linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0px, rgba(212, 175, 55, 0.12) 2px, transparent 2px, transparent 8px), repeating-linear-gradient(0deg, rgba(212, 175, 55, 0.1) 0px, rgba(212, 175, 55, 0.1) 2px, transparent 2px, transparent 12px), repeating-linear-gradient(45deg, rgba(40, 167, 69, 0.08) 0px, rgba(40, 167, 69, 0.08) 1px, transparent 1px, transparent 40px);
+            min-height: 100vh;
+        }
+        header { background: rgba(255, 255, 245, 0.95); border-bottom: 2px solid var(--gold); backdrop-filter: blur(2px); position: sticky; top: 0; z-index: 1030; }
+        .brand-text { font-family: 'Merriweather', serif; color: var(--gold); font-style: italic; font-weight: 700; font-size: clamp(1.8rem, 5vw, 3.6rem); }
+        .lead-text { color: var(--muted); font-style: italic; font-size: clamp(0.9rem, 3vw, 1.1rem); }
+        .icon-btn { font-size: 28px; color: var(--gold); background: rgba(255,255,240,0.9); border-radius: 50%; width: 55px; height: 55px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(212, 175, 55, 0.3); transition: all 0.3s ease; }
+        .icon-btn:hover { color: var(--logo-green); transform: scale(1.1); }
+        .cart-count { position: absolute; top: -5px; right: -5px; background: var(--logo-green); color: white; font-size: 13px; font-weight: bold; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; }
+        .menu-btn { font-size: 28px; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,240,0.9); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold); transition: all 0.3s ease; }
+        .menu-btn:hover { color: var(--logo-green); transform: scale(1.1); }
+        
+        .panel { position: fixed; background: #fffaf0; border: 2px solid var(--gold); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); z-index: 1050; max-height: 80vh; overflow-y: auto; animation: fadeIn 0.3s ease-out; }
+        .panel-header { background: linear-gradient(135deg, var(--gold), #b8860b); color: white; padding: 15px; border-radius: 18px 18px 0 0; }
+        
+        .perfil-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .btn-gold { 
+            background: linear-gradient(135deg, var(--gold), #b8860b); 
+            color: white; 
+            border: none; 
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-gold:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); 
+            color: white; 
+        }
+        .btn-gold:active {
+            transform: translateY(0);
+        }
+        .btn-gold:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-outline-gold { 
+            border: 2px solid var(--gold); 
+            color: var(--gold); 
+            background: transparent; 
+            transition: all 0.3s ease;
+        }
+        .btn-outline-gold:hover { 
+            background: var(--gold); 
+            color: white; 
+            transform: translateY(-2px);
+        }
+        
+        .text-gold { color: var(--gold); }
+        
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.2);
+            outline: none;
+        }
+        .form-control.is-invalid {
+            border-color: var(--error);
+            animation: shake 0.3s ease-in-out;
+        }
+        .form-control.is-valid {
+            border-color: var(--success);
+        }
+        
+        footer { background: rgba(35, 30, 22, 0.95); backdrop-filter: blur(5px); color: #ecd9b4; border-top: 2px solid var(--gold); }
+        
+        .btn-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .strength-meter {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+        .strength-text {
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .brand-text { font-size: 1.5rem; }
+            .icon-btn, .menu-btn { width: 48px; height: 48px; font-size: 24px; }
+        }
+        
+        @media (max-width: 480px) {
+            .icon-btn, .menu-btn { width: 42px; height: 42px; font-size: 20px; }
+        }
+        
+        .cart-item { transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .cart-item:hover { background: rgba(212, 175, 55, 0.05); transform: translateX(5px); }
+        .image-preview img { max-width: 100%; max-height: 150px; border-radius: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<header class="py-3">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-3">
+                <button id="menuBtn" class="menu-btn btn btn-outline-gold">
+                    <i class="fas fa-seedling"></i>
+                </button>
+            </div>
+            <div class="col-6 text-center">
+                <div class="brand-text">La Pomme Snacks</div>
+                <p class="lead-text mb-0">✨ Mi perfil ✨</p>
+            </div>
+            <div class="col-3 text-end">
+                <div class="d-flex gap-3 justify-content-end">
+                    <div id="cartBtn" class="icon-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="cart-count">0</span>
+                    </div>
+                    <div id="userBtn" class="icon-btn">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Menú Panel -->
+<div id="menuPanel" class="panel" style="display: none; top: 80px; left: 20px; min-width: 220px;">
+    <div class="list-group list-group-flush">
+        <a href="inicio.html" class="list-group-item list-group-item-action"><i class="fas fa-home me-2 text-gold"></i> Inicio</a>
+        <a href="barras.html" class="list-group-item list-group-item-action"><i class="fas fa-utensils me-2 text-gold"></i> Nuestras Barras</a>
+        <a href="promociones.html" class="list-group-item list-group-item-action"><i class="fas fa-tags me-2 text-gold"></i> Promociones</a>
+        <a href="mis-pedidos.html" class="list-group-item list-group-item-action"><i class="fas fa-history me-2 text-gold"></i> Mis Pedidos</a>
+        <a href="perfil.html" class="list-group-item list-group-item-action"><i class="fas fa-user-circle me-2 text-gold"></i> Mi Perfil</a>
+        <a href="contacto.html" class="list-group-item list-group-item-action"><i class="fas fa-envelope me-2 text-gold"></i> Contacto</a>
+    </div>
+</div>
+
+<!-- Carrito Panel -->
+<div id="cartPanel" class="panel" style="display: none; top: 80px; right: 20px; width: 350px;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Mi Carrito</h4></div>
+    <div class="p-3">
+        <div id="cartItems"></div>
+        <div id="cartTotal" class="cart-total mt-3 pt-3 border-top text-center"><h5 class="text-gold">Total: $0.00</h5></div>
+        <button id="checkoutBtn" class="btn btn-gold w-100 mt-3"><i class="fab fa-whatsapp me-2"></i>Proceder al pago</button>
+    </div>
+</div>
+
+<!-- Usuario Panel -->
+<div id="userPanel" class="panel" style="display: none; top: 80px; right: 20px; width: 380px;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Mi Cuenta</h4></div>
+    <div class="p-3">
+        <div id="userStatus" class="alert alert-success mt-3" style="display: none;"></div>
+        <div id="userInfo"></div>
+        <hr>
+        <a href="mis-pedidos.html" class="btn btn-outline-gold w-100 mb-2"><i class="fas fa-history me-2"></i>Ver mis pedidos</a>
+        <a href="perfil.html" class="btn btn-outline-gold w-100 mb-2"><i class="fas fa-user-edit me-2"></i>Mi Perfil</a>
+        <button id="doLogoutBtn" class="btn btn-danger w-100">Cerrar Sesión</button>
+    </div>
+</div>
+
+<!-- Payment Panel -->
+<div id="paymentPanel" class="panel" style="display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; max-width: 90%;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-credit-card me-2"></i>Transferencia Bancaria</h4></div>
+    <div class="p-3">
+        <div class="alert alert-info"><i class="fas fa-university me-2"></i><strong>Banco: BBVA México</strong><br><small>Cuenta: 1234 5678 9012 3456</small><br><small>CLABE: 012 345 6789 01234567 8</small></div>
+        <div class="mb-3"><label class="form-label"><i class="fas fa-image me-2"></i>Comprobante de pago (OBLIGATORIO):</label><input type="file" id="paymentProof" class="form-control" accept="image/*"><div id="imagePreview" class="image-preview"></div></div>
+        <button id="confirmPaymentBtn" class="btn btn-gold w-100 mb-2"><i class="fab fa-whatsapp me-2"></i>Continuar con el pedido</button>
+        <button id="cancelPaymentBtn" class="btn btn-secondary w-100">Cancelar</button>
+    </div>
+</div>
+
+<!-- Phone Panel -->
+<div id="phonePanel" class="panel" style="display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; max-width: 90%;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fab fa-whatsapp me-2"></i>Confirmar datos del servicio</h4></div>
+    <div class="p-3">
+        <p class="text-muted small">Ingresa tu número, fecha y hora en que requieres el servicio</p>
+        <div class="mb-3"><label class="form-label">Número de WhatsApp:</label><input type="tel" id="customerPhone" class="form-control" placeholder="Ej: 529381770841"></div>
+        <div class="mb-3"><label class="form-label">Fecha del servicio:</label><input type="date" id="serviceDate" class="form-control"><small class="text-danger d-block mt-1"><i class="fas fa-info-circle"></i> Recuerda que todos los servicios se solicitan con al menos 48 horas de anticipación.</small></div>
+        <div class="mb-3"><label class="form-label">Hora del servicio:</label><input type="time" id="serviceTime" class="form-control" step="1800"><small class="text-muted d-block mt-1"><i class="fas fa-clock"></i> Selecciona la hora aproximada</small></div>
+        <button id="sendWhatsAppBtn" class="btn btn-gold w-100 mb-2"><i class="fab fa-whatsapp me-2"></i>Enviar pedido por WhatsApp</button>
+        <button id="cancelPhoneBtn" class="btn btn-secondary w-100">Cancelar</button>
+    </div>
+</div>
+
+<div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040;"></div>
+
+<main>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="perfil-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-4x text-gold"></i>
+                        <h2 class="mt-2" id="nombreUsuario">Cargando...</h2>
+                        <p class="text-muted" id="emailUsuario"></p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="text-gold mb-4"><i class="fas fa-key me-2"></i>Cambiar contraseña</h4>
+                    
+                    <form id="cambiarPasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Contraseña actual</label>
+                            <div class="input-group-custom" style="position: relative;">
+                                <input type="password" id="currentPassword" class="form-control" placeholder="Ingresa tu contraseña actual" required>
+                                <i class="fas fa-eye field-icon" id="toggleCurrentPwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999;"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nueva contraseña</label>
+                            <div class="input-group-custom" style="position: relative;">
+                                <input type="password" id="newPassword" class="form-control" placeholder="Ingresa tu nueva contraseña" required>
+                                <i class="fas fa-eye field-icon" id="toggleNewPwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999;"></i>
+                            </div>
+                            <div class="strength-meter">
+                                <div class="strength-meter-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                            <small class="text-muted">Mínimo 4 caracteres. Entre más larga y compleja, más segura</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Confirmar nueva contraseña</label>
+                            <div class="input-group-custom" style="position: relative;">
+                                <input type="password" id="confirmPassword" class="form-control" placeholder="Repite tu nueva contraseña" required>
+                                <i class="fas fa-eye field-icon" id="toggleConfirmPwd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999;"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100" id="changePasswordBtn">
+                            <i class="fas fa-save me-2"></i>Actualizar contraseña
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2026 La Pomme Snacks - Todos los derechos reservados</p>
+        <small class="text-muted">✨ Snacks artesanales para momentos especiales ✨</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="shared.js"></script>
+
+<script>
+    // ==================== FUNCIONES DE VALIDACIÓN ====================
+    
+    // Calcular fortaleza de contraseña
+    function getPasswordStrength(password) {
+        if (!password) return { width: 0, color: '#e0e0e0', text: '' };
+        
+        let strength = 0;
+        if (password.length >= 4) strength++;
+        if (password.length >= 6) strength++;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        const levels = [
+            { width: 20, color: '#dc3545', text: 'Muy débil' },
+            { width: 40, color: '#dc3545', text: 'Débil' },
+            { width: 60, color: '#ffc107', text: 'Media' },
+            { width: 80, color: '#28a745', text: 'Buena' },
+            { width: 90, color: '#17a2b8', text: 'Fuerte' },
+            { width: 100, color: '#28a745', text: 'Muy fuerte' }
+        ];
+        
+        const idx = Math.min(strength - 1, levels.length - 1);
+        return levels[Math.max(0, idx)];
+    }
+    
+    // Validar nueva contraseña en tiempo real
+    const newPasswordInput = document.getElementById('newPassword');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+    
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = getPasswordStrength(password);
+            
+            if (strengthFill) {
+                strengthFill.style.width = strength.width + '%';
+                strengthFill.style.backgroundColor = strength.color;
+            }
+            if (strengthText) {
+                strengthText.textContent = strength.text;
+                strengthText.style.color = strength.color;
+            }
+            
+            // Validar longitud mínima
+            if (password.length > 0 && password.length < 4) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (password.length >= 4) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-invalid', 'is-valid');
+            }
+            
+            // Validar confirmación
+            const confirmInput = document.getElementById('confirmPassword');
+            if (confirmInput.value) {
+                if (password === confirmInput.value) {
+                    confirmInput.classList.remove('is-invalid');
+                    confirmInput.classList.add('is-valid');
+                } else {
+                    confirmInput.classList.remove('is-valid');
+                    confirmInput.classList.add('is-invalid');
+                }
+            }
+        });
+    }
+    
+    // Validar confirmación en tiempo real
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', function() {
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = this.value;
+            
+            if (confirmPwd === '') {
+                this.classList.remove('is-valid', 'is-invalid');
+            } else if (newPwd === confirmPwd && newPwd.length >= 4) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        });
+    }
+    
+    // Toggle password visibility
+    function setupPasswordToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if (toggle && input) {
+            toggle.addEventListener('click', function() {
+                const type = input.type === 'password' ? 'text' : 'password';
+                input.type = type;
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    }
+    
+    setupPasswordToggle('toggleCurrentPwd', 'currentPassword');
+    setupPasswordToggle('toggleNewPwd', 'newPassword');
+    setupPasswordToggle('toggleConfirmPwd', 'confirmPassword');
+    
+    // Mostrar información del usuario
+    function mostrarInfoUsuario() {
+        if (currentUser) {
+            document.getElementById('nombreUsuario').textContent = currentUser.username;
+            document.getElementById('emailUsuario').textContent = currentUser.email || 'Email no registrado';
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // Cambiar contraseña
+    const changeForm = document.getElementById('cambiarPasswordForm');
+    const changeBtn = document.getElementById('changePasswordBtn');
+    
+    if (changeForm) {
+        changeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validaciones locales
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, completa todos los campos',
+                    confirmButtonColor: '#d4af37'
+                });
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Las contraseñas nuevas no coinciden',
+                    confirmButtonColor: '#d4af37'
+                });
+                return;
+            }
+            
+            if (newPassword.length < 4) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Contraseña muy corta',
+                    text: 'La nueva contraseña debe tener al menos 4 caracteres',
+                    confirmButtonColor: '#d4af37'
+                });
+                return;
+            }
+            
+            // Deshabilitar botón y mostrar loading
+            changeBtn.disabled = true;
+            const originalText = changeBtn.innerHTML;
+            changeBtn.innerHTML = '<span class="btn-spinner"></span> Actualizando...';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ ¡Contraseña actualizada!',
+                        text: 'Tu contraseña ha sido cambiada exitosamente. Serás redirigido al inicio para iniciar sesión nuevamente.',
+                        confirmButtonColor: '#d4af37',
+                        confirmButtonText: 'Ir al inicio'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            // Mostrar mensaje de cerrando sesión
+                            await Swal.fire({
+                                icon: 'info',
+                                title: '🔒 Cerrando sesión',
+                                text: 'Por favor, inicia sesión con tu nueva contraseña',
+                                timer: 1500,
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            
+                            // Limpiar localStorage
+                            localStorage.removeItem('authToken');
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('adminToken');
+                            
+                            // Limpiar variables globales
+                            if (typeof authToken !== 'undefined') window.authToken = null;
+                            if (typeof currentUser !== 'undefined') window.currentUser = null;
+                            
+                            // Redirigir al login
+                            window.location.href = '/login.html';
+                        }
+                    });
+                } else {
+                    let errorMsg = data.message || 'No se pudo cambiar la contraseña';
+                    if (errorMsg.includes('current') || errorMsg.includes('actual')) {
+                        errorMsg = 'La contraseña actual es incorrecta. Por favor, verifica.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errorMsg,
+                        confirmButtonColor: '#d4af37'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor',
+                    confirmButtonColor: '#d4af37'
+                });
+            } finally {
+                // Restaurar botón
+                changeBtn.disabled = false;
+                changeBtn.innerHTML = originalText;
+                
+                // Limpiar formulario
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                document.getElementById('currentPassword').classList.remove('is-valid', 'is-invalid');
+                document.getElementById('newPassword').classList.remove('is-valid', 'is-invalid');
+                document.getElementById('confirmPassword').classList.remove('is-valid', 'is-invalid');
+                
+                // Resetear medidor
+                if (strengthFill) strengthFill.style.width = '0%';
+                if (strengthText) strengthText.textContent = '';
+            }
+        });
+    }
+    
+    // Esperar a que shared.js cargue
+    let checkInterval = setInterval(() => {
+        if (typeof currentUser !== 'undefined' && currentUser && typeof authToken !== 'undefined' && authToken) {
+            clearInterval(checkInterval);
+            
+            // Verificar que no sea admin
+            if (currentUser.role === 'admin') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Administrador',
+                    text: 'Los administradores no pueden cambiar su contraseña desde esta sección. Usa el panel de administración.',
+                    confirmButtonColor: '#d4af37'
+                }).then(() => {
+                    window.location.href = '/admin/index.html';
+                });
+                return;
+            }
+            mostrarInfoUsuario();
+        }
+    }, 500);
+    
+    // Timeout para evitar espera infinita
+    setTimeout(() => {
+        if (typeof currentUser === 'undefined' || !currentUser || typeof authToken === 'undefined' || !authToken) {
+            window.location.href = 'login.html';
+        }
+    }, 3000);
+</script>
+</body>
+</html>

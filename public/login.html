@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Iniciar Sesión - La Pomme Snacks</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --logo-green: #28a745;
+            --gold: #d4af37;
+            --muted: #666;
+            --error: #dc3545;
+            --success: #28a745;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Merriweather', serif;
+            background: linear-gradient(135deg, #fef7e8 0%, #f5e6d3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container {
+            max-width: 580px;
+            width: 100%;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 2px solid var(--gold);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-header {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .login-header h1 { font-size: 2rem; margin-bottom: 5px; }
+        .login-header p { opacity: 0.9; margin: 0; }
+        .login-body { padding: 30px; }
+        
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212,175,55,0.2);
+            outline: none;
+        }
+        .form-control.is-invalid {
+            border-color: var(--error);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+        .form-control.is-valid {
+            border-color: var(--success);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+        .invalid-feedback, .valid-feedback {
+            display: none;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+        }
+        .invalid-feedback.show { display: block; color: var(--error); }
+        .valid-feedback.show { display: block; color: var(--success); }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            font-size: 1rem;
+            padding: 12px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: white;
+            border-radius: 12px;
+        }
+        .nav-tabs .nav-link:not(.active):hover {
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212,175,55,0.4);
+            color: white;
+        }
+        .btn-gold:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        .strength-meter {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .strength-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+        .strength-text {
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+        
+        .field-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            z-index: 10;
+        }
+        .field-icon:hover { color: var(--gold); }
+        .input-group-custom { position: relative; }
+        .requirement-list { font-size: 0.7rem; margin-top: 5px; color: var(--muted); }
+        .requirement-list i { margin-right: 4px; font-size: 0.6rem; }
+        .text-success { color: var(--success) !important; }
+        .text-danger { color: var(--error) !important; }
+        
+        .alert-info {
+            background: rgba(212,175,55,0.1);
+            border: 1px solid var(--gold);
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .back-link a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link a:hover { color: var(--gold); }
+        
+        .btn-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .tab-pane { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @media (max-width: 576px) {
+            .login-container { max-width: 95%; }
+            .login-body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-apple-alt fa-3x mb-2"></i>
+            <h1>La Pomme Snacks</h1>
+            <p>Inicia sesión en tu cuenta</p>
+        </div>
+        <div class="login-body">
+            <ul class="nav nav-tabs mb-4 justify-content-center gap-2" id="loginTabs" role="tablist">
+                <li class="nav-item flex-grow-1">
+                    <button class="nav-link active fw-bold w-100" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPanel" type="button">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </button>
+                </li>
+                <li class="nav-item flex-grow-1">
+                    <button class="nav-link fw-bold w-100" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPanel" type="button">
+                        <i class="fas fa-user-plus me-2"></i>Registrarse
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- Login Panel -->
+                <div class="tab-pane fade show active" id="loginPanel">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-user me-1"></i> Usuario</label>
+                            <input type="text" id="loginUsername" class="form-control" placeholder="Ingresa tu usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-lock me-1"></i> Contraseña</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="Ingresa tu contraseña" required>
+                        </div>
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Credenciales de prueba:</strong><br>
+                            
+                        </div>
+                        <button type="submit" class="btn-gold mb-3" id="loginBtn">
+                            <i class="fas fa-arrow-right-to-bracket me-2"></i>Ingresar
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Register Panel -->
+                <div class="tab-pane fade" id="registerPanel">
+                    <form id="registerForm">
+                        <!-- Usuario -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-user me-1"></i> Usuario</label>
+                            <input type="text" id="regUser" class="form-control" placeholder="Ej: juan_perez" required>
+                            <div class="invalid-feedback" id="userError"></div>
+                            <div class="valid-feedback" id="userValid">✓ Usuario válido</div>
+                        </div>
+                        
+                        <!-- Correo -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-envelope me-1"></i> Correo electrónico</label>
+                            <input type="email" id="regEmail" class="form-control" placeholder="tu@email.com" required>
+                            <div class="invalid-feedback" id="emailError"></div>
+                            <div class="valid-feedback" id="emailValid">✓ Correo válido</div>
+                        </div>
+                        
+                        <!-- Teléfono -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fab fa-whatsapp me-1"></i> Teléfono (WhatsApp)</label>
+                            <input type="tel" id="regPhone" class="form-control" placeholder="Ej: 521234567890" required>
+                            <div class="invalid-feedback" id="phoneError"></div>
+                            <div class="valid-feedback" id="phoneValid">✓ Teléfono válido</div>
+                            <small class="text-muted">Formato: 521 + 10 dígitos</small>
+                        </div>
+                        
+                        <!-- Contraseña -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-lock me-1"></i> Contraseña</label>
+                            <div class="input-group-custom">
+                                <input type="password" id="regPassword" class="form-control" placeholder="Crea una contraseña" required>
+                                <i class="fas fa-eye field-icon" id="togglePwd" style="cursor: pointer;"></i>
+                            </div>
+                            <div class="strength-meter">
+                                <div class="strength-meter-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                            <div class="invalid-feedback" id="pwdError"></div>
+                            <div class="valid-feedback" id="pwdValid">✓ Contraseña válida</div>
+                        </div>
+                        
+                        <!-- Confirmar contraseña -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold"><i class="fas fa-check-circle me-1"></i> Confirmar contraseña</label>
+                            <div class="input-group-custom">
+                                <input type="password" id="regConfirmPassword" class="form-control" placeholder="Repite tu contraseña" required>
+                                <i class="fas fa-eye field-icon" id="toggleConfirmPwd" style="cursor: pointer;"></i>
+                            </div>
+                            <div class="invalid-feedback" id="confirmError"></div>
+                            <div class="valid-feedback" id="confirmValid">✓ Las contraseñas coinciden</div>
+                        </div>
+                        
+                        <button type="submit" class="btn-gold" id="registerBtn">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="back-link">
+                <a href="/"><i class="fas fa-arrow-left me-1"></i> Volver a la tienda</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const API_URL = 'http://localhost:3000/api';
+        
+        // ==================== ELEMENTOS DEL DOM ====================
+        // Registro
+        const regUser = document.getElementById('regUser');
+        const regEmail = document.getElementById('regEmail');
+        const regPhone = document.getElementById('regPhone');
+        const regPassword = document.getElementById('regPassword');
+        const regConfirm = document.getElementById('regConfirmPassword');
+        
+        const userError = document.getElementById('userError');
+        const userValid = document.getElementById('userValid');
+        const emailError = document.getElementById('emailError');
+        const emailValid = document.getElementById('emailValid');
+        const phoneError = document.getElementById('phoneError');
+        const phoneValid = document.getElementById('phoneValid');
+        const pwdError = document.getElementById('pwdError');
+        const pwdValid = document.getElementById('pwdValid');
+        const confirmError = document.getElementById('confirmError');
+        const confirmValid = document.getElementById('confirmValid');
+        
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        
+        // ==================== FUNCIONES DE VALIDACIÓN ====================
+        
+        // Validar Usuario (3-20 caracteres, solo letras/números/guion bajo)
+        function validateUser() {
+            const value = regUser.value.trim();
+            const regex = /^[a-zA-Z0-9_]{3,20}$/;
+            
+            if (value === '') {
+                regUser.classList.add('is-invalid');
+                regUser.classList.remove('is-valid');
+                userError.textContent = 'El usuario es requerido';
+                userError.classList.add('show');
+                userValid.classList.remove('show');
+                return false;
+            }
+            
+            if (value.length < 3) {
+                regUser.classList.add('is-invalid');
+                regUser.classList.remove('is-valid');
+                userError.textContent = 'El usuario debe tener al menos 3 caracteres';
+                userError.classList.add('show');
+                userValid.classList.remove('show');
+                return false;
+            }
+            
+            if (value.length > 20) {
+                regUser.classList.add('is-invalid');
+                regUser.classList.remove('is-valid');
+                userError.textContent = 'El usuario no puede tener más de 20 caracteres';
+                userError.classList.add('show');
+                userValid.classList.remove('show');
+                return false;
+            }
+            
+            if (!regex.test(value)) {
+                regUser.classList.add('is-invalid');
+                regUser.classList.remove('is-valid');
+                userError.textContent = 'Solo letras, números y guión bajo. Sin espacios';
+                userError.classList.add('show');
+                userValid.classList.remove('show');
+                return false;
+            }
+            
+            regUser.classList.remove('is-invalid');
+            regUser.classList.add('is-valid');
+            userError.classList.remove('show');
+            userValid.classList.add('show');
+            return true;
+        }
+        
+        // Validar Email
+        function validateEmail() {
+            const value = regEmail.value.trim();
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (value === '') {
+                regEmail.classList.add('is-invalid');
+                regEmail.classList.remove('is-valid');
+                emailError.textContent = 'El correo es requerido';
+                emailError.classList.add('show');
+                emailValid.classList.remove('show');
+                return false;
+            }
+            
+            if (!regex.test(value)) {
+                regEmail.classList.add('is-invalid');
+                regEmail.classList.remove('is-valid');
+                emailError.textContent = 'Formato de correo inválido (ej: usuario@dominio.com)';
+                emailError.classList.add('show');
+                emailValid.classList.remove('show');
+                return false;
+            }
+            
+            regEmail.classList.remove('is-invalid');
+            regEmail.classList.add('is-valid');
+            emailError.classList.remove('show');
+            emailValid.classList.add('show');
+            return true;
+        }
+        
+        // Validar Teléfono (521 + 10 dígitos)
+        function validatePhone() {
+            const value = regPhone.value.trim();
+            const regex = /^521\d{10}$/;
+            
+            if (value === '') {
+                regPhone.classList.add('is-invalid');
+                regPhone.classList.remove('is-valid');
+                phoneError.textContent = 'El teléfono es requerido';
+                phoneError.classList.add('show');
+                phoneValid.classList.remove('show');
+                return false;
+            }
+            
+            if (!regex.test(value)) {
+                regPhone.classList.add('is-invalid');
+                regPhone.classList.remove('is-valid');
+                phoneError.textContent = 'Formato inválido. Debe ser 521 + 10 dígitos';
+                phoneError.classList.add('show');
+                phoneValid.classList.remove('show');
+                return false;
+            }
+            
+            regPhone.classList.remove('is-invalid');
+            regPhone.classList.add('is-valid');
+            phoneError.classList.remove('show');
+            phoneValid.classList.add('show');
+            return true;
+        }
+        
+        // Validar Contraseña con medidor de fortaleza
+        function checkStrength(password) {
+            let strength = 0;
+            if (password.length >= 4) strength++;
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            const levels = [
+                { width: 20, color: '#dc3545', text: 'Muy débil' },
+                { width: 40, color: '#dc3545', text: 'Débil' },
+                { width: 60, color: '#ffc107', text: 'Media' },
+                { width: 80, color: '#28a745', text: 'Buena' },
+                { width: 90, color: '#17a2b8', text: 'Fuerte' },
+                { width: 100, color: '#28a745', text: 'Muy fuerte' }
+            ];
+            const idx = Math.min(strength, levels.length - 1);
+            strengthFill.style.width = levels[idx].width + '%';
+            strengthFill.style.backgroundColor = levels[idx].color;
+            strengthText.textContent = levels[idx].text;
+            strengthText.style.color = levels[idx].color;
+        }
+        
+        function validatePassword() {
+            const value = regPassword.value;
+            
+            if (value === '') {
+                regPassword.classList.add('is-invalid');
+                regPassword.classList.remove('is-valid');
+                pwdError.textContent = 'La contraseña es requerida';
+                pwdError.classList.add('show');
+                pwdValid.classList.remove('show');
+                checkStrength('');
+                return false;
+            }
+            
+            if (value.length < 4) {
+                regPassword.classList.add('is-invalid');
+                regPassword.classList.remove('is-valid');
+                pwdError.textContent = 'La contraseña debe tener al menos 4 caracteres';
+                pwdError.classList.add('show');
+                pwdValid.classList.remove('show');
+                checkStrength(value);
+                return false;
+            }
+            
+            regPassword.classList.remove('is-invalid');
+            regPassword.classList.add('is-valid');
+            pwdError.classList.remove('show');
+            pwdValid.classList.add('show');
+            checkStrength(value);
+            return true;
+        }
+        
+        // Validar Confirmación de Contraseña
+        function validateConfirm() {
+            const pwd = regPassword.value;
+            const confirm = regConfirm.value;
+            
+            if (confirm === '') {
+                regConfirm.classList.add('is-invalid');
+                regConfirm.classList.remove('is-valid');
+                confirmError.textContent = 'Confirma tu contraseña';
+                confirmError.classList.add('show');
+                confirmValid.classList.remove('show');
+                return false;
+            }
+            
+            if (pwd !== confirm) {
+                regConfirm.classList.add('is-invalid');
+                regConfirm.classList.remove('is-valid');
+                confirmError.textContent = 'Las contraseñas no coinciden';
+                confirmError.classList.add('show');
+                confirmValid.classList.remove('show');
+                return false;
+            }
+            
+            regConfirm.classList.remove('is-invalid');
+            regConfirm.classList.add('is-valid');
+            confirmError.classList.remove('show');
+            confirmValid.classList.add('show');
+            return true;
+        }
+        
+        // ==================== EVENTOS EN TIEMPO REAL ====================
+        regUser.addEventListener('input', validateUser);
+        regEmail.addEventListener('input', validateEmail);
+        regPhone.addEventListener('input', validatePhone);
+        regPassword.addEventListener('input', function() {
+            validatePassword();
+            validateConfirm();
+        });
+        regConfirm.addEventListener('input', validateConfirm);
+        
+        // Toggle password visibility
+        document.getElementById('togglePwd').addEventListener('click', function() {
+            const type = regPassword.type === 'password' ? 'text' : 'password';
+            regPassword.type = type;
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        document.getElementById('toggleConfirmPwd').addEventListener('click', function() {
+            const type = regConfirm.type === 'password' ? 'text' : 'password';
+            regConfirm.type = type;
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // ==================== REGISTRO ====================
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Ejecutar todas las validaciones
+            const isUserValid = validateUser();
+            const isEmailValid = validateEmail();
+            const isPhoneValid = validatePhone();
+            const isPwdValid = validatePassword();
+            const isConfirmValid = validateConfirm();
+            
+            if (!isUserValid || !isEmailValid || !isPhoneValid || !isPwdValid || !isConfirmValid) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos inválidos',
+                    text: 'Por favor, corrige los campos marcados en rojo',
+                    confirmButtonColor: '#d4af37'
+                });
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            const originalText = registerBtn.innerHTML;
+            registerBtn.innerHTML = '<span class="btn-spinner"></span> Registrando...';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: regUser.value.trim(),
+                        email: regEmail.value.trim(),
+                        phone: regPhone.value.trim(),
+                        password: regPassword.value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Registro exitoso!',
+                        text: 'Tu cuenta ha sido creada. Ahora puedes iniciar sesión.',
+                        confirmButtonColor: '#d4af37'
+                    }).then(() => {
+                        // Limpiar formulario
+                        regUser.value = '';
+                        regEmail.value = '';
+                        regPhone.value = '';
+                        regPassword.value = '';
+                        regConfirm.value = '';
+                        
+                        // Limpiar clases
+                        regUser.classList.remove('is-valid', 'is-invalid');
+                        regEmail.classList.remove('is-valid', 'is-invalid');
+                        regPhone.classList.remove('is-valid', 'is-invalid');
+                        regPassword.classList.remove('is-valid', 'is-invalid');
+                        regConfirm.classList.remove('is-valid', 'is-invalid');
+                        
+                        // Resetear medidor
+                        strengthFill.style.width = '0%';
+                        strengthText.textContent = '';
+                        
+                        // Cambiar a login
+                        const loginTab = document.querySelector('[data-bs-target="#loginPanel"]');
+                        if (loginTab) {
+                            new bootstrap.Tab(loginTab).show();
+                        }
+                    });
+                } else {
+                    let errorMsg = data.message || 'Error al registrar';
+                    if (errorMsg.includes('UNIQUE') || errorMsg.includes('exists')) {
+                        errorMsg = 'El usuario ya existe. Por favor, elige otro nombre.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al registrar',
+                        text: errorMsg,
+                        confirmButtonColor: '#d4af37'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor. ¿Está corriendo en http://localhost:3000?',
+                    confirmButtonColor: '#d4af37'
+                });
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = originalText;
+            }
+        });
+        
+        // ==================== LOGIN ====================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos vacíos',
+                    text: 'Por favor, ingresa tu usuario y contraseña',
+                    confirmButtonColor: '#d4af37'
+                });
+                return;
+            }
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<span class="btn-spinner"></span> Iniciando sesión...';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    
+                    if (data.user.role === 'admin') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '👑 Bienvenido Administrador',
+                            text: `Hola ${data.user.username}`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => {
+                            window.location.href = '/admin/index.html';
+                        }, 1500);
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Bienvenido!',
+                            text: `Hola ${data.user.username}`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1500);
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Credenciales inválidas',
+                        text: data.message || 'Usuario o contraseña incorrectos',
+                        confirmButtonColor: '#d4af37'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo conectar con el servidor',
+                    confirmButtonColor: '#d4af37'
+                });
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+            }
+        });
+        
+        // Redirección si ya hay sesión activa
+        const token = localStorage.getItem('authToken');
+        const user = localStorage.getItem('currentUser');
+        if (token && user) {
+            try {
+                const userData = JSON.parse(user);
+                if (userData.role === 'admin') {
+                    window.location.href = '/admin/index.html';
+                } else {
+                    window.location.href = '/';
+                }
+            } catch(e) {}
+        }
+    </script>
+</body>
+</html>

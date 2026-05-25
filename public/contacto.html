@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>La Pomme Snacks - Contacto</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        :root {
+            --logo-green: #28a745;
+            --gold: #d4af37;
+            --muted: #666;
+            --dark-bg: #2c2b1f;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Merriweather', serif;
+            background-color: #fef7e8;
+            background-image: repeating-linear-gradient(90deg, rgba(212, 175, 55, 0.12) 0px, rgba(212, 175, 55, 0.12) 2px, transparent 2px, transparent 8px), repeating-linear-gradient(0deg, rgba(212, 175, 55, 0.1) 0px, rgba(212, 175, 55, 0.1) 2px, transparent 2px, transparent 12px), repeating-linear-gradient(45deg, rgba(40, 167, 69, 0.08) 0px, rgba(40, 167, 69, 0.08) 1px, transparent 1px, transparent 40px);
+            min-height: 100vh;
+        }
+        header { background: rgba(255, 255, 245, 0.95); border-bottom: 2px solid var(--gold); backdrop-filter: blur(2px); position: sticky; top: 0; z-index: 1030; }
+        .brand-text { font-family: 'Merriweather', serif; color: var(--gold); font-style: italic; font-weight: 700; font-size: clamp(1.8rem, 5vw, 3.6rem); }
+        .lead-text { color: var(--muted); font-style: italic; font-size: clamp(0.9rem, 3vw, 1.1rem); }
+        .icon-btn { font-size: 28px; color: var(--gold); background: rgba(255,255,240,0.9); border-radius: 50%; width: 55px; height: 55px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .icon-btn:hover { color: var(--logo-green); transform: scale(1.1); }
+        .cart-count { position: absolute; top: -5px; right: -5px; background: var(--logo-green); color: white; font-size: 13px; font-weight: bold; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; }
+        .menu-btn { font-size: 28px; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,240,0.9); border: 1px solid rgba(212, 175, 55, 0.3); color: var(--gold); }
+        .menu-btn:hover { color: var(--logo-green); transform: scale(1.1); }
+        
+        .panel { position: fixed; background: #fffaf0; border: 2px solid var(--gold); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); z-index: 1050; max-height: 80vh; overflow-y: auto; }
+        .panel-header { background: linear-gradient(135deg, var(--gold), #b8860b); color: white; padding: 15px; border-radius: 18px 18px 0 0; }
+        
+        .contact-section { margin: 60px 0; text-align: center; }
+        .section-title { text-align: center; font-family: 'Poppins', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--gold); margin-bottom: 30px; width: 100%; }
+        .section-title i { color: var(--logo-green); margin: 0 10px; font-size: 2rem; }
+        .section-title::after { content: ""; display: block; width: 80px; height: 3px; background: linear-gradient(90deg, var(--gold), var(--logo-green)); margin: 12px auto 0; border-radius: 3px; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .contact-card { background: rgba(255, 250, 240, 0.95); border: 2px solid var(--gold); border-radius: 25px; padding: 30px 20px; text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .contact-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+        .contact-icon { font-size: 3.5rem; color: var(--gold); margin-bottom: 15px; }
+        .contact-card h3 { font-family: 'Poppins', sans-serif; font-size: 1.5rem; color: var(--logo-green); margin-bottom: 15px; }
+        .contact-card p { color: var(--muted); font-family: 'Poppins', sans-serif; margin-bottom: 20px; line-height: 1.5; }
+        .contact-link { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, var(--gold), #b8860b); color: #fff; padding: 10px 24px; border-radius: 40px; text-decoration: none; font-family: 'Poppins', sans-serif; font-weight: 600; transition: 0.3s; }
+        .contact-link:hover { background: var(--logo-green); transform: translateY(-2px); color: white; }
+        .social-icons { display: flex; justify-content: center; gap: 25px; margin-top: 20px; }
+        .social-icon { display: inline-flex; align-items: center; justify-content: center; width: 55px; height: 55px; background: rgba(212, 175, 55, 0.15); border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font-size: 1.8rem; transition: 0.3s; text-decoration: none; }
+        .social-icon:hover { background: var(--gold); color: #fff; transform: translateY(-5px); }
+        
+        .btn-gold { background: linear-gradient(135deg, var(--gold), #b8860b); color: white; border: none; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4); color: white; }
+        .btn-outline-gold { border: 2px solid var(--gold); color: var(--gold); background: transparent; }
+        .btn-outline-gold:hover { background: var(--gold); color: white; }
+        footer { background: rgba(35, 30, 22, 0.95); backdrop-filter: blur(5px); color: #ecd9b4; border-top: 2px solid var(--gold); }
+        .text-gold { color: var(--gold); }
+        .cart-item { transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .image-preview img { max-width: 100%; max-height: 150px; border-radius: 10px; margin-top: 10px; }
+        
+        @media (max-width: 768px) { .brand-text { font-size: 1.5rem; } .icon-btn, .menu-btn { width: 48px; height: 48px; font-size: 24px; } }
+        @media (max-width: 480px) { .icon-btn, .menu-btn { width: 42px; height: 42px; font-size: 20px; } }
+    </style>
+</head>
+<body>
+
+<header class="py-3">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-3">
+                <button id="menuBtn" class="menu-btn btn btn-outline-gold">
+                    <i class="fas fa-seedling"></i>
+                </button>
+            </div>
+            <div class="col-6 text-center">
+                <div class="brand-text">La Pomme Snacks</div>
+                <p class="lead-text mb-0">✨ Las mejores barras en tus eventos especiales ✨</p>
+            </div>
+            <div class="col-3 text-end">
+                <div class="d-flex gap-3 justify-content-end">
+                    <div id="cartBtn" class="icon-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="cart-count">0</span>
+                    </div>
+                    <div id="userBtn" class="icon-btn">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Menú Panel -->
+<div id="menuPanel" class="panel" style="display: none; top: 80px; left: 20px; min-width: 220px;">
+    <div class="list-group list-group-flush">
+        <a href="inicio.html" class="list-group-item list-group-item-action"><i class="fas fa-home me-2 text-gold"></i> Inicio</a>
+        <a href="barras.html" class="list-group-item list-group-item-action"><i class="fas fa-utensils me-2 text-gold"></i> Nuestras Barras</a>
+        <a href="promociones.html" class="list-group-item list-group-item-action"><i class="fas fa-tags me-2 text-gold"></i> Promociones</a>
+        <a href="mis-pedidos.html" class="list-group-item list-group-item-action"><i class="fas fa-history me-2 text-gold"></i> Mis Pedidos</a>
+        <a href="perfil.html" class="list-group-item list-group-item-action"><i class="fas fa-user-circle me-2 text-gold"></i> Mi Perfil</a>
+        <a href="contacto.html" class="list-group-item list-group-item-action"><i class="fas fa-envelope me-2 text-gold"></i> Contacto</a>
+    </div>
+</div>
+
+<!-- Carrito Panel -->
+<div id="cartPanel" class="panel" style="display: none; top: 80px; right: 20px; width: 350px;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Mi Carrito</h4></div>
+    <div class="p-3">
+        <div id="cartItems"></div>
+        <div id="cartTotal" class="cart-total mt-3 pt-3 border-top text-center"><h5 class="text-gold">Total: $0.00</h5></div>
+        <button id="checkoutBtn" class="btn btn-gold w-100 mt-3"><i class="fab fa-whatsapp me-2"></i>Proceder al pago</button>
+    </div>
+</div>
+
+<!-- Usuario Panel -->
+<div id="userPanel" class="panel" style="display: none; top: 80px; right: 20px; width: 380px;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Mi Cuenta</h4></div>
+    <div class="p-3">
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item"><button class="nav-link active" data-tab="login">Iniciar Sesión</button></li>
+            <li class="nav-item"><button class="nav-link" data-tab="register">Registrarse</button></li>
+        </ul>
+        <div id="loginTab" class="tab-content active">
+            <input type="text" id="loginUsername" class="form-control mb-2" placeholder="Usuario">
+            <input type="password" id="loginPassword" class="form-control mb-3" placeholder="Contraseña">
+            <button id="doLoginBtn" class="btn btn-gold w-100">Ingresar</button>
+        </div>
+        <div id="registerTab" class="tab-content" style="display: none;">
+            <input type="text" id="regUsername" class="form-control mb-2" placeholder="Usuario">
+            <input type="email" id="regEmail" class="form-control mb-2" placeholder="Correo electrónico">
+            <input type="text" id="regPhone" class="form-control mb-2" placeholder="Teléfono (para WhatsApp)">
+            <input type="password" id="regPassword" class="form-control mb-2" placeholder="Contraseña">
+            <input type="password" id="regConfirmPassword" class="form-control mb-3" placeholder="Confirmar contraseña">
+            <button id="doRegisterBtn" class="btn btn-gold w-100">Registrarse</button>
+        </div>
+        <div id="userStatus" class="alert alert-success mt-3" style="display: none;"></div>
+        <hr>
+        <a href="mis-pedidos.html" class="btn btn-outline-gold w-100 mb-2"><i class="fas fa-history me-2"></i>Ver mis pedidos</a>
+        <a href="perfil.html" class="btn btn-outline-gold w-100 mb-2"><i class="fas fa-user-edit me-2"></i>Mi Perfil</a>
+        <button id="doLogoutBtn" class="btn btn-danger w-100" style="display: none;">Cerrar Sesión</button>
+    </div>
+</div>
+
+<!-- Payment Panel -->
+<div id="paymentPanel" class="panel" style="display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; max-width: 90%;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fas fa-credit-card me-2"></i>Transferencia Bancaria</h4></div>
+    <div class="p-3">
+        <div class="alert alert-info"><i class="fas fa-university me-2"></i><strong>Banco: BBVA México</strong><br><small>Cuenta: 1234 5678 9012 3456</small><br><small>CLABE: 012 345 6789 01234567 8</small></div>
+        <div class="mb-3"><label class="form-label"><i class="fas fa-image me-2"></i>Comprobante de pago (OBLIGATORIO):</label><input type="file" id="paymentProof" class="form-control" accept="image/*"><div id="imagePreview" class="image-preview"></div></div>
+        <button id="confirmPaymentBtn" class="btn btn-gold w-100 mb-2"><i class="fab fa-whatsapp me-2"></i>Continuar con el pedido</button>
+        <button id="cancelPaymentBtn" class="btn btn-secondary w-100">Cancelar</button>
+    </div>
+</div>
+
+<!-- Phone Panel -->
+<div id="phonePanel" class="panel" style="display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; max-width: 90%;">
+    <div class="panel-header"><h4 class="mb-0"><i class="fab fa-whatsapp me-2"></i>Confirmar datos del servicio</h4></div>
+    <div class="p-3">
+        <p class="text-muted small">Ingresa tu número, fecha y hora en que requieres el servicio</p>
+        <div class="mb-3"><label class="form-label">Número de WhatsApp:</label><input type="tel" id="customerPhone" class="form-control" placeholder="Ej: 521234567890"></div>
+        <div class="mb-3"><label class="form-label">Fecha del servicio:</label><input type="date" id="serviceDate" class="form-control"><small class="text-danger d-block mt-1"><i class="fas fa-info-circle"></i> Recuerda que todos los servicios se solicitan con al menos 48 horas de anticipación.</small></div>
+        <div class="mb-3"><label class="form-label">Hora del servicio:</label><input type="time" id="serviceTime" class="form-control" step="1800"><small class="text-muted d-block mt-1"><i class="fas fa-clock"></i> Selecciona la hora aproximada</small></div>
+        <button id="sendWhatsAppBtn" class="btn btn-gold w-100 mb-2"><i class="fab fa-whatsapp me-2"></i>Enviar pedido por WhatsApp</button>
+        <button id="cancelPhoneBtn" class="btn btn-secondary w-100">Cancelar</button>
+    </div>
+</div>
+
+<div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1040;"></div>
+
+<main>
+    <div class="container">
+        <section class="contact-section">
+            <h2 class="section-title">
+                <i class="fas fa-heart"></i> Conécta con Nosotros <i class="fas fa-heart"></i>
+            </h2>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+                    <h3>WhatsApp</h3>
+                    <p>¡Escríbenos! Respondemos en menos de 24 horas</p>
+                    <a href="https://wa.me/5219381951559" target="_blank" class="contact-link"><i class="fab fa-whatsapp"></i> Enviar mensaje</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fab fa-instagram"></i></div>
+                    <h3>Instagram</h3>
+                    <p>Sigue nuestras promociones y eventos especiales</p>
+                    <a href="https://instagram.com/lapommesnacks" target="_blank" class="contact-link"><i class="fab fa-instagram"></i> @lapommesnacks</a>
+                </div>
+
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="fab fa-facebook"></i></div>
+                    <h3>Facebook</h3>
+                    <p>Conoce nuestras barras y servicios</p>
+                    <a href="https://facebook.com/LaPommeSnacks" target="_blank" class="contact-link"><i class="fab fa-facebook"></i> La Pomme Snacks</a>
+                </div>
+            </div>
+
+            <div class="contact-card" style="margin-top: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <h3>Ubicación</h3>
+                <p>📍 Villahermosa, Tabasco, México</p>
+                <p>📞 Teléfono: 938 195 1159</p>
+                <p>✉️ Email: lapommesnacks@outlook.com</p>
+                
+                <div class="social-icons">
+                    <a href="https://wa.me/5219381951559" target="_blank" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://instagram.com/lapommesnacks" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://facebook.com/lapommesnacks" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="mailto:lapommesnacks@outlook.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">&copy; 2026 La Pomme Snacks - Todos los derechos reservados</p>
+        <small class="text-muted">✨ Snacks artesanales para momentos especiales ✨</small>
+        <div class="mt-3 pt-2 border-top">
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/contacto.html" class="text-decoration-none">
+                    <i class="fas fa-envelope me-1" style="color: #d4af37;"></i>
+                    <span class="small">Contacto</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="shared.js"></script>
+</body>
+</html>

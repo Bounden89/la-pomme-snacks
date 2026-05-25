@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - La Pomme Snacks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --gold: #d4af37; }
+        body { background: #f5f5f5; font-family: 'Segoe UI', sans-serif; }
+        .sidebar { background: #2c3e50; min-height: 100vh; color: white; position: sticky; top: 0; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; cursor: pointer; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--gold); color: #2c3e50; }
+        .btn-gold { background: var(--gold); color: white; border: none; }
+        .btn-gold:hover { background: #b8860b; transform: translateY(-2px); }
+        .btn-outline-gold { border: 2px solid var(--gold); color: var(--gold); background: transparent; }
+        .btn-outline-gold:hover { background: var(--gold); color: white; }
+        .table-responsive { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card-stats { border: none; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; }
+        .card-stats:hover { transform: translateY(-5px); }
+        .bg-gold { background: var(--gold); }
+        .image-preview { max-width: 80px; max-height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+        .pedido-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--gold); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .status-select { width: 140px; }
+        .comprobante-img { max-width: 100%; border-radius: 10px; cursor: pointer; transition: transform 0.2s; }
+        .comprobante-img:hover { transform: scale(1.05); }
+        .text-gold { color: var(--gold); }
+        .image-gallery-item { cursor: pointer; transition: transform 0.2s; }
+        .image-gallery-item:hover { transform: scale(1.05); }
+        .border-gold { border: 1px solid var(--gold); }
+        .card-header.bg-gold { background: linear-gradient(135deg, var(--gold), #b8860b); }
+        .precio-input { width: 120px; }
+        .ingrediente-item { margin-bottom: 8px; }
+        
+        canvas {
+            max-height: 300px;
+            width: 100%;
+        }
+        .card {
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            border-bottom: 2px solid var(--gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(40, 167, 69, 0.05));
+        }
+        
+        .dropdown-export {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-export-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            z-index: 1;
+            border: 1px solid var(--gold);
+        }
+        .dropdown-export-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+        .dropdown-export-content a:hover {
+            background-color: #f5f5f5;
+            color: var(--gold);
+        }
+        .dropdown-export:hover .dropdown-export-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 p-0 sidebar">
+                <div class="p-3 text-center border-bottom">
+                    <h4><i class="fas fa-apple-alt"></i> La Pomme</h4>
+                    <small>Panel Administrativo</small>
+                </div>
+                <nav class="nav flex-column p-3">
+                    <a class="nav-link active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <a class="nav-link" data-section="barras"><i class="fas fa-utensils"></i> Barras</a>
+                    <a class="nav-link" data-section="promociones"><i class="fas fa-tags"></i> Promociones</a>
+                    <a class="nav-link" data-section="pedidos"><i class="fas fa-shopping-cart"></i> Pedidos</a>
+                    <a class="nav-link" data-section="usuarios"><i class="fas fa-users"></i> Usuarios</a>
+                    <a class="nav-link" data-section="imagenes"><i class="fas fa-images"></i> Gestor de Imágenes</a>
+                    <hr class="bg-light">
+                    <a class="nav-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <!-- Dashboard Section con gráficas -->
+                <div id="dashboardSection">
+                    <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>Dashboard</h2>
+                    
+                    <div class="row g-4 mb-5" id="statsCards">
+                        <div class="col-12 text-center p-5"><div class="spinner-border text-gold"></div> Cargando...</div>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2 text-gold"></i>Ventas mensuales</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="ventasMensualesChart" style="height: 300px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-gold"></i>Pedidos por estado</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="pedidosEstadoChart" style="height: 300px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0"><i class="fas fa-trophy me-2 text-gold"></i>Productos más vendidos</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="productosTopChart" style="height: 300px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-white border-bottom">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line me-2 text-gold"></i>Ingresos diarios (últimos 30 días)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="ingresosDiariosChart" style="height: 300px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Barras Section -->
+                <div id="barrasSection" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-utensils me-2"></i>Gestión de Barras</h2>
+                        <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#barraModal" onclick="resetBarraForm()">
+                            <i class="fas fa-plus"></i> Nueva Barra
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Categoría</th><th>Estado</th><th>Acciones</th></tr>
+                            </thead>
+                            <tbody id="barrasList"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Promociones Section -->
+                <div id="promocionesSection" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2><i class="fas fa-tags me-2"></i>Gestión de Promociones</h2>
+                        <button class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#promoModal" onclick="resetPromoForm()">
+                            <i class="fas fa-plus"></i> Nueva Promoción
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr><th>ID</th><th>Imagen</th><th>Nombre</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr>
+                            </thead>
+                            <tbody id="promocionesList"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pedidos Section CON BOTONES DE EXPORTACIÓN -->
+                <div id="pedidosSection" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <h2><i class="fas fa-shopping-cart me-2"></i>Gestión de Pedidos</h2>
+                        <div class="dropdown-export">
+                            <button class="btn btn-gold">
+                                <i class="fas fa-download me-2"></i>Exportar <i class="fas fa-chevron-down ms-2"></i>
+                            </button>
+                            <div class="dropdown-export-content">
+                                <a href="#" id="exportExcelBtn">
+                                    <i class="fas fa-file-excel" style="color: #1d6f42;"></i>
+                                    Exportar a Excel (todos)
+                                </a>
+                                <a href="#" id="exportExcelFiltradoBtn">
+                                    <i class="fas fa-filter" style="color: #1d6f42;"></i>
+                                    Exportar a Excel (filtrados)
+                                </a>
+                                <hr style="margin: 5px 0;">
+                                <a href="#" id="exportPdfBtn">
+                                    <i class="fas fa-file-pdf" style="color: #dc3545;"></i>
+                                    Exportar a PDF (todos)
+                                </a>
+                                <a href="#" id="exportPdfFiltradoBtn">
+                                    <i class="fas fa-filter" style="color: #dc3545;"></i>
+                                    Exportar a PDF (filtrados)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="pedidosList"></div>
+                </div>
+                
+                <!-- Usuarios Section -->
+                <div id="usuariosSection" style="display:none;">
+                    <h2 class="mb-4"><i class="fas fa-users me-2"></i>Gestión de Usuarios</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr><th>ID</th><th>Usuario</th><th>Email</th><th>Teléfono</th><th>Registro</th><th>Pedidos</th><th>Acciones</th></tr>
+                            </thead>
+                            <tbody id="usuariosList"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Imagenes Section -->
+                <div id="imagenesSection" style="display:none;">
+                    <h2 class="mb-4"><i class="fas fa-images me-2"></i>Gestor de Imágenes</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-gold text-white">
+                            <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Subir nueva imagen</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="row align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Seleccionar imagen</label>
+                                        <input type="file" id="uploadImage" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif" required>
+                                        <small class="text-muted">Formatos: JPG, PNG, WEBP, GIF (Max 5MB)</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Categoría</label>
+                                        <select id="uploadCategory" class="form-select">
+                                            <option value="barras">Barras</option>
+                                            <option value="promociones">Promociones</option>
+                                            <option value="carrusel">Carrusel</option>
+                                            <option value="general">General</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-gold w-100">
+                                            <i class="fas fa-cloud-upload-alt"></i> Subir
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="uploadPreview" class="mt-3" style="display: none;">
+                                <div class="alert alert-info"><i class="fas fa-spinner fa-spin me-2"></i> Subiendo imagen...</div>
+                            </div>
+                            <div id="uploadResult" class="mt-3"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-gold text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-images me-2"></i>Galería de imágenes</h5>
+                            <button class="btn btn-sm btn-light" onclick="loadImages()"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="imageGallery">
+                                <div class="col-12 text-center p-5"><div class="spinner-border text-gold"></div> Cargando...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Barra -->
+    <div class="modal fade" id="barraModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-gold text-white">
+                    <h5 class="modal-title"><i class="fas fa-utensils me-2"></i>Editar Barra</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="barraId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3"><label class="form-label">Nombre</label><input type="text" id="barraNombre" class="form-control" required></div>
+                            <div class="mb-3"><label class="form-label">Descripción</label><textarea id="barraDescripcion" class="form-control" rows="3" required></textarea></div>
+                            <div class="mb-3"><label class="form-label">Categoría</label><input type="text" id="barraCategoria" class="form-control" required></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3"><label class="form-label">Imagen</label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="barraImagen" class="form-control" placeholder="img/nombre.jpg" required>
+                                    <button class="btn btn-outline-gold" type="button" onclick="openImageSelector('barraImagen')"><i class="fas fa-images"></i></button>
+                                </div>
+                                <img id="barraImagenPreview" src="" style="max-width: 100%; border-radius: 10px; display: none;">
+                            </div>
+                            <div class="mb-3"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="barraActive" checked><label class="form-check-label">Activo</label></div></div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-gold mb-3">
+                                <div class="card-header bg-gold text-white">
+                                    <i class="fas fa-dollar-sign me-2"></i>Precios por cantidad de personas
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="table-light">
+                                                <tr><th>Personas</th><th>Precio ($ MXN)</th></tr>
+                                            </thead>
+                                            <tbody id="preciosContainer"></tbody>
+                                        </table>
+                                    </div>
+                                    <small class="text-muted">Mínimo 30, máximo 100 personas (incrementos de 10)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card border-gold">
+                                <div class="card-header bg-gold text-white">
+                                    <i class="fas fa-list-ul me-2"></i>Ingredientes
+                                </div>
+                                <div class="card-body">
+                                    <div id="ingredientesContainer"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-gold mt-2" onclick="agregarCampoIngrediente()">
+                                        <i class="fas fa-plus me-1"></i>Agregar ingrediente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-gold" onclick="saveBarra()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Promoción -->
+    <div class="modal fade" id="promoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-gold text-white">
+                    <h5 class="modal-title"><i class="fas fa-tags me-2"></i>Promoción</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="promoId">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3"><label class="form-label">Nombre</label><input type="text" id="promoNombre" class="form-control" required></div>
+                            <div class="mb-3"><label class="form-label">Descripción</label><textarea id="promoDescripcion" class="form-control" rows="3" required></textarea></div>
+                            <div class="row">
+                                <div class="col-md-6"><div class="mb-3"><label class="form-label">Precio</label><input type="number" id="promoPrecio" class="form-control" step="0.01" required></div></div>
+                                <div class="col-md-6"><div class="mb-3"><label class="form-label">Precio Anterior</label><input type="number" id="promoPrecioAnterior" class="form-control" step="0.01"></div></div>
+                            </div>
+                            <div class="mb-3"><label class="form-label">Badge</label><input type="text" id="promoBadge" class="form-control" placeholder="10% OFF"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3"><label class="form-label">Imagen</label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="promoImagen" class="form-control" required>
+                                    <button class="btn btn-outline-gold" type="button" onclick="openImageSelector('promoImagen')"><i class="fas fa-images"></i></button>
+                                </div>
+                                <img id="promoImagenPreview" src="" style="max-width: 100%; border-radius: 10px; display: none;">
+                            </div>
+                            <div class="mb-3"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="promoActive" checked><label class="form-check-label">Activo</label></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-gold" onclick="savePromo()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selector de Imágenes -->
+    <div class="modal fade" id="imageSelectorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-gold text-white">
+                    <h5 class="modal-title"><i class="fas fa-images me-2"></i>Seleccionar imagen</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                    <div class="row" id="imageSelectorGrid"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- xlsx para exportar a Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- pdfmake para generar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

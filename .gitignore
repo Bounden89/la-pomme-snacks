@@ -1,0 +1,22 @@
+# En la terminal, crear el archivo .gitignore
+echo "# Dependencias
+node_modules/
+
+# Variables de entorno
+.env
+.env.local
+.env.production
+
+# Base de datos local
+*.sqlite
+*.sqlite3
+
+# Archivos temporales
+*.log
+*.tmp
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+" > .gitignore
