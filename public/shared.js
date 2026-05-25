@@ -1,5 +1,5 @@
 // ==================== CONFIGURACIÓN GLOBAL ====================
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 let authToken = null;
 let currentUser = null;
 let cart = [];
