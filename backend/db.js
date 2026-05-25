@@ -6,10 +6,8 @@ const bcrypt = require('bcrypt');
 let db;
 
 async function initializeDatabase() {
-    // ==================== SOLO ESTAS 2 LÍNEAS SON NUEVAS ====================
-    const isRender = process.env.RENDER === 'true';
-    const dbPath = isRender ? '/data/database.sqlite' : path.join(__dirname, 'database.sqlite');
-    // ==================== FIN DE LAS LÍNEAS NUEVAS ====================
+    // Railway persiste automáticamente los archivos en el directorio de trabajo
+    const dbPath = path.join(__dirname, 'database.sqlite');
     
     console.log(`📁 Base de datos en: ${dbPath}`);
     
@@ -18,9 +16,8 @@ async function initializeDatabase() {
         driver: sqlite3.Database
     });
 
-    // Crear todas las tablas
+    // ========== CREAR TABLAS (igual que antes) ==========
     await db.exec(`
-        -- Usuarios (clientes y admin) - EMAIL PERMITE NULL
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
@@ -30,8 +27,6 @@ async function initializeDatabase() {
             role TEXT DEFAULT 'user',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-
-        -- Barras
         CREATE TABLE IF NOT EXISTS barras (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
@@ -40,8 +35,6 @@ async function initializeDatabase() {
             imagen TEXT,
             active INTEGER DEFAULT 1
         );
-
-        -- Precios por barra
         CREATE TABLE IF NOT EXISTS precios_barra (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             barra_id INTEGER NOT NULL,
@@ -50,16 +43,12 @@ async function initializeDatabase() {
             FOREIGN KEY (barra_id) REFERENCES barras(id) ON DELETE CASCADE,
             UNIQUE(barra_id, personas)
         );
-
-        -- Ingredientes
         CREATE TABLE IF NOT EXISTS ingredientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             barra_id INTEGER NOT NULL,
             nombre TEXT NOT NULL,
             FOREIGN KEY (barra_id) REFERENCES barras(id) ON DELETE CASCADE
         );
-
-        -- Promociones
         CREATE TABLE IF NOT EXISTS promociones (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
@@ -70,8 +59,6 @@ async function initializeDatabase() {
             imagen TEXT,
             active INTEGER DEFAULT 1
         );
-
-        -- Carrito
         CREATE TABLE IF NOT EXISTS carrito (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -83,8 +70,6 @@ async function initializeDatabase() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
-
-        -- Pedidos
         CREATE TABLE IF NOT EXISTS pedidos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -96,8 +81,6 @@ async function initializeDatabase() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
-
-        -- Detalles del pedido
         CREATE TABLE IF NOT EXISTS pedido_detalles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             pedido_id INTEGER NOT NULL,
@@ -117,19 +100,17 @@ async function initializeDatabase() {
     return db;
 }
 
+// ========== FUNCIONES DE INSERCIÓN DE DATOS (igual que antes) ==========
 async function insertInitialData() {
-    // Verificar si ya hay admin
     const adminExists = await db.get('SELECT id FROM users WHERE role = "admin" LIMIT 1');
     
     if (!adminExists) {
-        // Admin por defecto
         const adminPassword = await bcrypt.hash('admin123', 10);
         await db.run(
             'INSERT INTO users (username, email, phone, password, role) VALUES (?, ?, ?, ?, ?)',
             ['admin', 'admin@lapomme.com', '529381770841', adminPassword, 'admin']
         );
         
-        // Usuario demo
         const demoPassword = await bcrypt.hash('123456', 10);
         await db.run(
             'INSERT INTO users (username, email, phone, password, role) VALUES (?, ?, ?, ?, ?)',
@@ -138,7 +119,7 @@ async function insertInitialData() {
         console.log('✅ Usuarios creados: admin / demo');
     }
     
-    // Insertar barras si no existen
+    // Barras
     const barrasCount = await db.get('SELECT COUNT(*) as count FROM barras');
     if (barrasCount.count === 0) {
         const barrasData = [
@@ -182,19 +163,13 @@ async function insertInitialData() {
                 'INSERT INTO barras (nombre, descripcion, categoria, imagen) VALUES (?, ?, ?, ?)',
                 [barra.nombre, barra.descripcion, barra.categoria, barra.imagen]
             );
-            
             const barraId = result.lastID;
             
-            // Insertar precios
             for (const [personas, preciosArray] of Object.entries(preciosConfig)) {
                 const precio = preciosArray[i];
-                await db.run(
-                    'INSERT INTO precios_barra (barra_id, personas, precio) VALUES (?, ?, ?)',
-                    [barraId, parseInt(personas), precio]
-                );
+                await db.run('INSERT INTO precios_barra (barra_id, personas, precio) VALUES (?, ?, ?)', [barraId, parseInt(personas), precio]);
             }
             
-            // Insertar ingredientes
             const ingredientes = ingredientesMap[barraId] || ["Ingredientes variados"];
             for (const ing of ingredientes) {
                 await db.run('INSERT INTO ingredientes (barra_id, nombre) VALUES (?, ?)', [barraId, ing]);
@@ -203,7 +178,7 @@ async function insertInitialData() {
         console.log('✅ Barras insertadas');
     }
     
-    // Insertar promociones
+    // Promociones
     const promosCount = await db.get('SELECT COUNT(*) as count FROM promociones');
     if (promosCount.count === 0) {
         const promocionesData = [
@@ -212,7 +187,6 @@ async function insertInitialData() {
             { nombre: "Pinta Pellones", descripcion: "Excelente para fiestas infantiles.", precio: 550, precio_anterior: 700, badge: "Oferta", imagen: "img/lu1.jpg" },
             { nombre: "Yesitos", descripcion: "Diviertete pintando superheroes.", precio: 750, precio_anterior: 850, badge: "Oferta", imagen: "img/lu2.jpg" }
         ];
-        
         for (const promo of promocionesData) {
             await db.run(
                 'INSERT INTO promociones (nombre, descripcion, precio, precio_anterior, badge, imagen) VALUES (?, ?, ?, ?, ?, ?)',
