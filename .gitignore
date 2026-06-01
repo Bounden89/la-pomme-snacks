@@ -1,15 +1,15 @@
-# En la terminal, crear el archivo .gitignore
-echo "# Dependencias
+# Base de datos SQLite (no subir a GitHub)
+*.sqlite
+*.sqlite3
+database.sqlite
+backend/database.sqlite
+
+# Dependencias
 node_modules/
 
 # Variables de entorno
 .env
 .env.local
-.env.production
-
-# Base de datos local
-*.sqlite
-*.sqlite3
 
 # Archivos temporales
 *.log
@@ -19,4 +19,4 @@ node_modules/
 # IDE
 .vscode/
 .idea/
-" > .gitignore
+
